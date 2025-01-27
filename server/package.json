@@ -6,7 +6,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "npx tsc",
-		"start": "tsc && node dist/app.js",
+		"start": "tsc && dotenvx run -- node dist/index.js",
 		"dev": "dotenvx run -- tsx watch src/index.ts"
 	},
 	"keywords": [],
