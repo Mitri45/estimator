@@ -1,0 +1,33 @@
+{
+	"name": "@ap/server",
+	"version": "1.0.0",
+	"description": "Estimator app",
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "npx tsc",
+		"start": "tsc && node dist/app.js",
+		"dev": "dotenvx run -- tsx watch src/index.ts"
+	},
+	"keywords": [],
+	"author": "Dmitrii Bludov",
+	"license": "ISC",
+	"dependencies": {
+		"@dotenvx/dotenvx": "^1.14.1",
+		"cors": "^2.8.5",
+		"express": "^4.21.0",
+		"rxdb": "^15.33.0",
+		"rxjs": "^7.8.1",
+		"socket.io": "^4.7.5",
+		"uuid": "^10.0.0"
+	},
+	"devDependencies": {
+		"common": "workspace:common",
+		"@types/cors": "^2.8.17",
+		"@types/express": "^4.17.21",
+		"@types/node": "^22.5.5",
+		"@types/uuid": "^10.0.0",
+		"tsx": "^4.19.1",
+		"typescript": "^5.6.2"
+	}
+}
