@@ -13,6 +13,18 @@
     @apply rounded-xl border-gray-300 bg-gray-50 focus:border-blue-500 focus:ring-blue-500;
   }
 
+  /* Remove arrows from number inputs */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
   button {
     @apply transition-all duration-200;
   }

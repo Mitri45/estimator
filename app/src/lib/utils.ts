@@ -1,6 +1,6 @@
 import { toast } from "react-hot-toast";
 import { io } from "socket.io-client";
-import type { AverageTypes as AveragesType, Participant, Room } from "common";
+import type { EstimatesType as AveragesType, Participant, Room } from "common";
 
 export const socket = io(import.meta.env.VITE_SERVER, {
 	transports: ["websocket"],

@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import cors from "cors";
-import type { AverageTypes, Participants, Rooms } from "common";
+import type { EstimatesType, Participants, Rooms } from "common";
 
 const port = process.env.SERVER_PORT || 3000;
 const origin = process.env.ORIGIN || "http://localhost:5173";
@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
 
 	socket.on(
 		"submit_estimates",
-		({ risk, effort, uncertainty }: AverageTypes) => {
+		({ risk, effort, uncertainty }: EstimatesType) => {
 			const participant = participants.get(socket.id);
 			if (!participant) return;
 

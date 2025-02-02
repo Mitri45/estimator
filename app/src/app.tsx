@@ -15,13 +15,20 @@ import {
 	calculateAverages,
 	getHighestValues,
 } from "./lib/utils";
+import EstimatesInputs from "./components/estimates-inpits";
+
+export type EstimateInputs = {
+	risk: string;
+	effort: string;
+	uncertainty: string;
+};
 
 function App() {
 	const [room, setRoom] = useState<Room | null>(null);
 	const [participants, setParticipants] = useState<Participant[]>([]);
 	const [userName, setUserName] = useState("");
 	const [roomName, setRoomName] = useState("");
-	const [estimates, setEstimates] = useState({
+	const [estimates, setEstimates] = useState<EstimateInputs>({
 		risk: "",
 		effort: "",
 		uncertainty: "",
@@ -108,70 +115,20 @@ function App() {
 
 						{allSubmitted && <Averages averages={averages} />}
 
-						{!participants.find((p) => p.id === socket.id)?.submitted && (
-							<div className="border-t border-gray-100 pt-6">
-								<h2 className="text-2xl font-semibold mb-4">Your Estimates</h2>
-								<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-									<input
-										type="number"
-										placeholder="Risk (1-10)"
-										value={estimates.risk}
-										onChange={(e) =>
-											setEstimates((prev) => ({
-												...prev,
-												risk: e.target.value,
-											}))
-										}
-										className="p-4 text-lg"
-										min="1"
-										max="10"
-									/>
-									<input
-										type="number"
-										placeholder="Effort (1-10)"
-										value={estimates.effort}
-										onChange={(e) =>
-											setEstimates((prev) => ({
-												...prev,
-												effort: e.target.value,
-											}))
-										}
-										className="p-4 text-lg"
-										min="1"
-										max="10"
-									/>
-									<input
-										type="number"
-										placeholder="Uncertainty (1-10)"
-										value={estimates.uncertainty}
-										onChange={(e) =>
-											setEstimates((prev) => ({
-												...prev,
-												uncertainty: e.target.value,
-											}))
-										}
-										className="p-4 text-lg"
-										min="1"
-										max="10"
-									/>
-								</div>
-								<button
-									type="button"
-									onClick={() => submitEstimates(room, estimates)}
-									disabled={
-										!estimates.risk ||
-										!estimates.effort ||
-										!estimates.uncertainty
-									}
-									className="apple-button text-lg"
-								>
-									Submit Estimates
-								</button>
-							</div>
-						)}
+						<EstimatesInputs
+							estimates={estimates}
+							setEstimates={setEstimates}
+							submitEstimates={submitEstimates}
+							room={room}
+							socketId={socket.id}
+							participants={participants}
+						/>
 					</div>
 				</div>
 			)}
+			<p className="absolute bottom-3 right-3  text-center text-gray-500 text-sm mt-4">
+				Version {import.meta.env.VITE_VERSION}
+			</p>
 		</div>
 	);
 }

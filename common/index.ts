@@ -32,7 +32,7 @@ export type Participants = Map<string, Participant>;
 
 export type Rooms = Map<string, Room>;
 
-export type AverageTypes = {
+export type EstimatesType = {
 	risk: number;
 	effort: number;
 	uncertainty: number;
