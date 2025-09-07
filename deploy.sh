@@ -45,7 +45,9 @@ print_status "Changed to project directory: $PROJECT_DIR"
     # Ensure devDependencies (like typescript) are installed for build
     INSTALL_CMD="pnpm install --prod=false"
     # Use npx to invoke local binaries the same way you do locally
-    BUILD_CMD="npx tsc -b && npx vite build"
+    # Note: do NOT store compound commands with && in a variable — the shell
+    # won't reparse control operators after expansion. We'll run commands
+    # directly below so '&&' works as intended.
     SERVER_BUILD_CMD="npx tsc"
 
 # Install root dependencies
@@ -56,8 +58,8 @@ $INSTALL_CMD
 print_status "Building frontend..."
 cd app
 $INSTALL_CMD
-# Run the build using npx (calls local node_modules/.bin/tsc and vite)
-if $BUILD_CMD; then
+# Run the frontend build directly so '&&' is interpreted as a control operator
+if npx tsc -b && npx vite build; then
     print_status "Frontend build command succeeded"
 else
     print_error "Frontend build failed. Ensure Node and devDependencies are installed (try 'npx tsc -v' and 'npx vite --version')."
@@ -95,7 +97,7 @@ cd ../server
 $INSTALL_CMD
 
 # Build server (use npx tsc so server build uses local TypeScript)
-if $SERVER_BUILD_CMD; then
+if npx tsc; then
     print_status "Server build succeeded"
 else
     print_error "Server build failed. Ensure Node and devDependencies are installed (try 'npx tsc -v')."
