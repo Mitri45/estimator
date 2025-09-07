@@ -44,8 +44,9 @@ print_status "Changed to project directory: $PROJECT_DIR"
     PACKAGE_MANAGER="pnpm"
     # Ensure devDependencies (like typescript) are installed for build
     INSTALL_CMD="pnpm install --prod=false"
-    BUILD_CMD="pnpm build"
-    SERVER_BUILD_CMD="pnpm build"
+    # Use npx to invoke local binaries the same way you do locally
+    BUILD_CMD="npx tsc -b && npx vite build"
+    SERVER_BUILD_CMD="npx tsc"
 
 # Install root dependencies
 print_status "Installing root dependencies..."
@@ -55,18 +56,13 @@ $INSTALL_CMD
 print_status "Building frontend..."
 cd app
 $INSTALL_CMD
-# Double-check tsc is available via the local install. If not, try to run via pnpm exec.
-if ! command -v tsc &> /dev/null; then
-    # Try pnpm exec tsc (will use local node_modules/.bin)
-    if pnpm exec --silent tsc -v &> /dev/null; then
-        print_status "Using local tsc via pnpm exec"
-    else
-        print_warning "tsc not found after install. Attempting to install devDependencies explicitly and retry."
-        $INSTALL_CMD
-    fi
+# Run the build using npx (calls local node_modules/.bin/tsc and vite)
+if $BUILD_CMD; then
+    print_status "Frontend build command succeeded"
+else
+    print_error "Frontend build failed. Ensure Node and devDependencies are installed (try 'npx tsc -v' and 'npx vite --version')."
+    exit 1
 fi
-
-$BUILD_CMD
 
 # Check if build was successful
 if [ ! -d "dist" ]; then
@@ -98,8 +94,13 @@ cd ../server
 # Install server dependencies (include devDependencies because we need tsc for build)
 $INSTALL_CMD
 
-# Build server (this relies on local tsc from devDependencies)
-$SERVER_BUILD_CMD
+# Build server (use npx tsc so server build uses local TypeScript)
+if $SERVER_BUILD_CMD; then
+    print_status "Server build succeeded"
+else
+    print_error "Server build failed. Ensure Node and devDependencies are installed (try 'npx tsc -v')."
+    exit 1
+fi
 
 # Set environment variables for production (after build)
 export NODE_ENV=production
