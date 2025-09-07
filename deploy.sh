@@ -42,7 +42,8 @@ cd "$PROJECT_DIR"
 print_status "Changed to project directory: $PROJECT_DIR"
 
     PACKAGE_MANAGER="pnpm"
-    INSTALL_CMD="pnpm install"
+    # Ensure devDependencies (like typescript) are installed for build
+    INSTALL_CMD="pnpm install --prod=false"
     BUILD_CMD="pnpm build"
     SERVER_BUILD_CMD="pnpm build"
 
@@ -54,6 +55,17 @@ $INSTALL_CMD
 print_status "Building frontend..."
 cd app
 $INSTALL_CMD
+# Double-check tsc is available via the local install. If not, try to run via pnpm exec.
+if ! command -v tsc &> /dev/null; then
+    # Try pnpm exec tsc (will use local node_modules/.bin)
+    if pnpm exec --silent tsc -v &> /dev/null; then
+        print_status "Using local tsc via pnpm exec"
+    else
+        print_warning "tsc not found after install. Attempting to install devDependencies explicitly and retry."
+        $INSTALL_CMD
+    fi
+fi
+
 $BUILD_CMD
 
 # Check if build was successful
@@ -83,16 +95,16 @@ print_status "Frontend files copied to $NGINX_ROOT"
 print_status "Building and starting server..."
 cd ../server
 
-# Set environment variables for production
+# Install server dependencies (include devDependencies because we need tsc for build)
+$INSTALL_CMD
+
+# Build server (this relies on local tsc from devDependencies)
+$SERVER_BUILD_CMD
+
+# Set environment variables for production (after build)
 export NODE_ENV=production
 export SERVER_PORT=$SERVER_PORT
 export ORIGIN="https://estimator.madeby.dev"
-
-# Install server dependencies
-$INSTALL_CMD
-
-# Build server
-$SERVER_BUILD_CMD
 
 # Check if PM2 is installed
 if ! command -v pm2 &> /dev/null; then
